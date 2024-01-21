@@ -1,0 +1,60 @@
+{% extends "base.html" %} {% block content %}
+<h1>{{chat.name}}</h1>
+
+<ul id="messages-container">
+    {% for message in messages %}
+        <li>{{message.user.username}} - {{message.message}}</li>
+    {% endfor %}
+</ul>
+
+<input type="hidden" id="chat-slug" value="{{chat.slug}}" />
+<input type="hidden" id="user" value="{{request.user.username}}" />
+<input
+  type="text"
+  name="message"
+  id="message"
+  placeholder="Enter Message"
+  autocomplete="false"
+/>
+<button type="button" onclick="onSendClick()">send</button>
+<script>
+  const chat_slug = document.getElementById("chat-slug").value;
+  const chatSocket = new WebSocket(
+    `ws://${window.location.host}/ws/${chat_slug}/`
+  );
+  chatSocket.onmessage = (e) => {
+    const data = JSON.parse(e.data);
+    if (data?.message) {
+      const messagesContainer = document.getElementById("messages-container");
+      const existingMessages = messagesContainer.innerHTML;
+      const newMessage = `<li>${data?.username ? data?.username : 'Anonymous'} - ${data?.message}</li>`;
+      messagesContainer.innerHTML = `${existingMessages} ${newMessage}`;
+    } else {
+      alert("Empty message from server...");
+    }
+  };
+  chatSocket.onclose = (e) => {
+    console.log("socket closed", e);
+  };
+
+  function onSendClick() {
+    const messageInput = document.getElementById("message");
+    const message = messageInput.value;
+    const username = document.getElementById("user").value;
+    const chat_slug = document.getElementById("chat-slug").value;
+    chatSocket.send(
+      JSON.stringify({
+        message: message,
+        username: username,
+        room: chat_slug,
+      })
+    );
+    messageInput.value = "";
+  }
+
+  window.onbeforeunload = (ev) => {
+    console.log("Socket Closed!!!!");
+    chatSocket.close();
+  };
+</script>
+{% endblock content %}
