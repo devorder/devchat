@@ -1,15 +1,21 @@
-{% extends "base.html" %}
+{% extends "base.html" %} {% block content %}
+<div class="col-3 border-end">
+  <div class="list-group py-4">
+    {% for room in rooms %}
+    <a
+      href="{{ room.get_absolute_url }}"
+      class="list-group-item list-group-item-action"
+      aria-current="true"
+    >
+      <div class="d-flex w-100 justify-content-between">
+        <h5 class="mb-1">{{room.name}}</h5>
+        <small>3 days ago</small>
+      </div>
+      <p class="mb-1">This is last received message from this chat.</p>
+    </a>
+    {% endfor %}
+  </div>
+</div>
 
-{% block content %}
-    <div class="col-2 border-end">
-        <ul>
-            {% for room in rooms %}
-                <li><a href="{{ room.get_absolute_url }}">{{room.name}}</a></li>
-            {% endfor %}
-        </ul>
-    </div>
-
-    <div class="col-10">
-        Chat
-    </div>
+<div class="col-9">Chat</div>
 {% endblock content %}
