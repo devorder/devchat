@@ -1,9 +1,15 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <ul>
-        {% for room in rooms %}
-            <li><a href="{{ room.get_absolute_url }}">{{room.name}}</a></li>
-        {% endfor %}
-    </ul>
+    <div class="col-2 border-end">
+        <ul>
+            {% for room in rooms %}
+                <li><a href="{{ room.get_absolute_url }}">{{room.name}}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="col-10">
+        Chat
+    </div>
 {% endblock content %}
